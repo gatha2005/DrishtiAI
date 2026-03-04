@@ -1,54 +1,51 @@
 import { useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Cameras from "./pages/Cameras";
-import Alerts from "./pages/Alerts";
-import Database from "./pages/Database";
-import Reports from "./pages/Reports";
-import Navbar from "./components/Navbar";
-import SketchBuilder from "./pages/SketchBuilder";
+import SketchPage from "./pages/SketchPage";
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [activePage, setActivePage] = useState("dashboard");
 
   const handleLogin = (userData) => setUser(userData);
-
-  const handleLogout = () => {
-    setUser(null);
-    setActivePage("dashboard");
-  };
-
-  if (!user) {
-    return <Login onLogin={handleLogin} />;
-  }
-
-  const renderPage = () => {
-    switch (activePage) {
-      case "dashboard":
-        return <Dashboard user={user} />;
-      case "cameras":
-        return <Cameras />;
-      case "alerts":
-        return <Alerts />;
-      case "database":
-        return <Database />;
-      case "reports":
-        return <Reports />;
-      default:
-        return <Dashboard user={user} />;
-    }
-  };
+  const handleLogout = () => setUser(null);
 
   return (
-    <div>
-      <Navbar onNavigate={setActivePage} />
-      {activePage === "dashboard" && (<Dashboard user={user} onLogout={handleLogout} />)}
-      {activePage === "cameras" && <Cameras />}
-      {activePage === "alerts" && <Alerts />}
-      {activePage === "reports" && <Reports />}
-      {activePage === "sketch" && <SketchBuilder />}  
+    <BrowserRouter>
+      <Routes>
+        {/* If not logged in, always go to login */}
+        <Route
+          path="/"
+          element={
+            user
+              ? <Navigate to="/dashboard" replace />
+              : <Login onLogin={handleLogin} />
+          }
+        />
 
-    </div>
+        {/* Dashboard — protected */}
+        <Route
+          path="/dashboard"
+          element={
+            user
+              ? <Dashboard user={user} onLogout={handleLogout} />
+              : <Navigate to="/" replace />
+          }
+        />
+
+        {/* Sketch Tool — protected */}
+        <Route
+          path="/sketch"
+          element={
+            user
+              ? <SketchPage user={user} onLogout={handleLogout} />
+              : <Navigate to="/" replace />
+          }
+        />
+
+        {/* Catch all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
