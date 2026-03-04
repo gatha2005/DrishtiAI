@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg-void: #040608;
+  --bg-deep: #080c10;
+  --bg-panel: #0c1118;
+  --bg-surface: #111820;
+  --bg-elevated: #18222e;
+  --border-dim: #1e2d3d;
+  --border-mid: #243547;
+  --border-glow: #2e4a66;
+  --amber: #f5a623;
+  --amber-dim: #c4821a;
+  --amber-glow: rgba(245, 166, 35, 0.15);
+  --green: #00e5a0;
+  --green-dim: #00a872;
+  --green-glow: rgba(0, 229, 160, 0.12);
+  --red: #ff3b4e;
+  --red-glow: rgba(255, 59, 78, 0.15);
+  --blue: #2196f3;
+  --blue-dim: #1565c0;
+  --text-primary: #d4e8f5;
+  --text-secondary: #6b8ca8;
+  --text-muted: #3a5570;
+  --text-code: #7ec8e3;
+  --font-display: 'Rajdhani', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-body: 'Exo 2', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root, .app-root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scanline overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-display);
+}
+
+input, select {
+  font-family: var(--font-body);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+  border-radius: 2px;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-amber {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(245, 166, 35, 0); }
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 229, 160, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(0, 229, 160, 0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes glitch {
+  0%, 95%, 100% { transform: translateX(0); }
+  96% { transform: translateX(-2px); clip-path: inset(20% 0 30% 0); }
+  97% { transform: translateX(2px); clip-path: inset(60% 0 10% 0); }
+  98% { transform: translateX(-1px); clip-path: inset(40% 0 50% 0); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
