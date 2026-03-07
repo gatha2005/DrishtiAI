@@ -15,7 +15,7 @@ export default function SketchPage({ user, onLogout }) {
         onLogout={onLogout}
         activePage="sketch"
         onNavigate={(page) => {
-          if (page === "dashboard") navigate("/dashboard");
+          navigate("/dashboard");
         }}
       />
 

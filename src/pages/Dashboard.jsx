@@ -166,34 +166,59 @@ function AlertsPage({ user }) {
 }
 
 function DatabasePage() {
+  const [viewRecord, setViewRecord] = useState(null);
+
+  // Load saved cases from localStorage
+  const savedCases = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("sentinel_cases") || "[]");
+    } catch { return []; }
+  })();
+
+  const allRecords = [
+    ...savedCases,
+    ...DB_RECORDS.map(r => ({ ...r, sketchUrl: null, generatedUrl: null })),
+  ];
+
+  const statusColors = {
+    Open:      { color: "#f5a623", bg: "rgba(245,166,35,0.1)",   border: "rgba(245,166,35,0.3)"   },
+    Closed:    { color: "#6b8ca8", bg: "rgba(107,140,168,0.1)", border: "rgba(107,140,168,0.2)" },
+    Review:    { color: "#2196f3", bg: "rgba(33,150,243,0.1)",  border: "rgba(33,150,243,0.3)"  },
+    Submitted: { color: "#00e5a0", bg: "rgba(0,229,160,0.1)",   border: "rgba(0,229,160,0.3)"   },
+  };
+
+  const deleteRecord = (id) => {
+    const updated = savedCases.filter(r => r.id !== id);
+    localStorage.setItem("sentinel_cases", JSON.stringify(updated));
+    window.location.reload();
+  };
+
   return (
     <div>
       <div style={styles.subHeader}>
         <div>
           <div style={styles.pageTitle}>Case Database</div>
-          <div style={styles.pageSubtitle}>148,392 total records · Last synced 2m ago</div>
+          <div style={styles.pageSubtitle}>{allRecords.length} records · {savedCases.length} submitted composites</div>
         </div>
         <button style={styles.actionBtn}>⊞ EXPORT</button>
       </div>
+
       <div style={styles.tableWrap}>
         <table style={styles.table}>
           <thead>
             <tr>
-              {["Record ID", "Subject", "Case ID", "Date", "Status"].map(h => (
+              {["Record ID", "Subject", "Case ID", "Date", "Status", "Images", "Actions"].map(h => (
                 <th key={h} style={styles.th}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {DB_RECORDS.map((rec, i) => {
-              const statusColors = {
-                Open:   { color: "#f5a623", bg: "rgba(245,166,35,0.1)",   border: "rgba(245,166,35,0.3)"   },
-                Closed: { color: "#6b8ca8", bg: "rgba(107,140,168,0.1)", border: "rgba(107,140,168,0.2)" },
-                Review: { color: "#2196f3", bg: "rgba(33,150,243,0.1)",  border: "rgba(33,150,243,0.3)"  },
-              };
-              const sc = statusColors[rec.status];
+            {allRecords.map((rec, i) => {
+              const sc = statusColors[rec.status] || statusColors.Open;
+              const hasSketch    = !!rec.sketchUrl;
+              const hasGenerated = !!rec.generatedUrl;
               return (
-                <tr key={rec.id} style={{ ...styles.tr, animationDelay: `${i * 0.05}s` }}>
+                <tr key={rec.id + i} style={{ ...styles.tr, animationDelay: `${i * 0.05}s` }}>
                   <td style={styles.td}><span style={styles.monoText}>{rec.id}</span></td>
                   <td style={styles.td}>{rec.subject}</td>
                   <td style={styles.td}><span style={styles.monoText}>{rec.caseId}</span></td>
@@ -203,12 +228,133 @@ function DatabasePage() {
                       {rec.status.toUpperCase()}
                     </span>
                   </td>
+                  <td style={styles.td}>
+                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                      {hasSketch && (
+                        <span style={styles.imgBadge}>🖼 SKETCH</span>
+                      )}
+                      {hasGenerated && (
+                        <span style={{ ...styles.imgBadge, color: "#a855f7", borderColor: "rgba(168,85,247,0.3)", background: "rgba(168,85,247,0.08)" }}>✦ AI FACE</span>
+                      )}
+                      {!hasSketch && !hasGenerated && (
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "#3a5570" }}>—</span>
+                      )}
+                    </div>
+                  </td>
+                  <td style={styles.td}>
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      <button
+                        style={{ ...styles.tblBtn, color: "#00e5a0", borderColor: "rgba(0,229,160,0.3)" }}
+                        onClick={() => setViewRecord(rec)}
+                      >
+                        VIEW
+                      </button>
+                      {hasSketch && (
+                        <button
+                          style={styles.tblBtn}
+                          onClick={() => {
+                            const link = document.createElement("a");
+                            link.href = rec.sketchUrl;
+                            link.download = `${rec.id}_sketch.png`;
+                            link.click();
+                          }}
+                        >
+                          ↓
+                        </button>
+                      )}
+                      {savedCases.find(r => r.id === rec.id) && (
+                        <button
+                          style={{ ...styles.tblBtn, color: "#ff3b4e", borderColor: "rgba(255,59,78,0.3)" }}
+                          onClick={() => deleteRecord(rec.id)}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
+
+      {/* ── Image Viewer Modal ── */}
+      {viewRecord && (
+        <div style={dbStyles.overlay} onClick={() => setViewRecord(null)}>
+          <div style={dbStyles.modal} onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div style={dbStyles.modalHeader}>
+              <div style={dbStyles.modalTitle}>
+                <span style={dbStyles.dot} />
+                {viewRecord.id} · {viewRecord.subject}
+              </div>
+              <button style={dbStyles.closeBtn} onClick={() => setViewRecord(null)}>✕</button>
+            </div>
+
+            {/* Meta info */}
+            <div style={dbStyles.metaRow}>
+              <span style={dbStyles.metaItem}>CASE: <span style={dbStyles.metaVal}>{viewRecord.caseId}</span></span>
+              <span style={dbStyles.metaItem}>DATE: <span style={dbStyles.metaVal}>{viewRecord.date}</span></span>
+              <span style={dbStyles.metaItem}>STATUS: <span style={{ ...dbStyles.metaVal, color: statusColors[viewRecord.status]?.color }}>{viewRecord.status.toUpperCase()}</span></span>
+            </div>
+
+            {/* Images side by side */}
+            {(viewRecord.sketchUrl || viewRecord.generatedUrl) ? (
+              <div style={dbStyles.imagesRow}>
+                {viewRecord.sketchUrl && (
+                  <div style={dbStyles.imageCard}>
+                    <div style={dbStyles.imageLabel}>🖼 COMPOSITE SKETCH</div>
+                    <img src={viewRecord.sketchUrl} alt="Sketch" style={dbStyles.image} />
+                    <button
+                      style={dbStyles.downloadBtn}
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = viewRecord.sketchUrl;
+                        link.download = `${viewRecord.id}_sketch.png`;
+                        link.click();
+                      }}
+                    >
+                      ↓ DOWNLOAD SKETCH
+                    </button>
+                  </div>
+                )}
+                {viewRecord.generatedUrl && (
+                  <div style={dbStyles.imageCard}>
+                    <div style={{ ...dbStyles.imageLabel, color: "#a855f7" }}>✦ AI GENERATED FACE</div>
+                    <img src={viewRecord.generatedUrl} alt="Generated" style={dbStyles.image} />
+                    <button
+                      style={{ ...dbStyles.downloadBtn, borderColor: "rgba(168,85,247,0.4)", color: "#a855f7" }}
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = viewRecord.generatedUrl;
+                        link.download = `${viewRecord.id}_generated.png`;
+                        link.click();
+                      }}
+                    >
+                      ↓ DOWNLOAD AI FACE
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={dbStyles.noImages}>
+                <div style={dbStyles.noImagesIcon}>◎</div>
+                <div style={dbStyles.noImagesTitle}>NO IMAGES ATTACHED</div>
+                <div style={dbStyles.noImagesText}>
+                  This record has no composite sketch or AI-generated face.
+                  Go to the <strong style={{ color: "#00e5a0" }}>Sketch Tool</strong>, build a composite and click{" "}
+                  <strong style={{ color: "#00e5a0" }}>✓ SUBMIT TO CASE</strong> to attach images.
+                </div>
+              </div>
+            )}
+
+            <div style={dbStyles.footer}>
+              <button style={dbStyles.closeFullBtn} onClick={() => setViewRecord(null)}>CLOSE</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -482,4 +628,28 @@ const styles = {
   alertCamera: { fontFamily: "var(--font-mono)", fontSize: "10px", color: "#3a5570" },
   alertTime: { fontFamily: "var(--font-mono)", fontSize: "10px", color: "#3a5570" },
   resolveBtn: { flexShrink: 0, padding: "5px 10px", background: "transparent", border: "1px solid #1e2d3d", borderRadius: "3px", color: "#3a5570", fontFamily: "var(--font-mono)", fontSize: "9px", cursor: "pointer" },
+  imgBadge: { fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "1px", padding: "2px 7px", borderRadius: "3px", color: "#00e5a0", background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.25)", whiteSpace: "nowrap" },
+};
+
+const dbStyles = {
+  overlay: { position: "fixed", inset: 0, background: "rgba(4,6,8,0.92)", backdropFilter: "blur(8px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", animation: "fadeUp 0.3s ease-out" },
+  modal: { width: "100%", maxWidth: "900px", background: "#0c1118", border: "1px solid #2e4a66", borderRadius: "8px", boxShadow: "0 24px 64px rgba(0,0,0,0.8)", animation: "fadeUp 0.3s ease-out", maxHeight: "90vh", overflowY: "auto" },
+  modalHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid #1e2d3d", background: "#080c10", position: "sticky", top: 0, zIndex: 10 },
+  modalTitle: { display: "flex", alignItems: "center", gap: "10px", fontFamily: "var(--font-display)", fontSize: "14px", fontWeight: "700", letterSpacing: "2px", color: "#d4e8f5" },
+  dot: { width: "8px", height: "8px", borderRadius: "50%", background: "#00e5a0", animation: "pulse-green 2s infinite", flexShrink: 0 },
+  closeBtn: { background: "transparent", border: "none", color: "#3a5570", fontSize: "18px", cursor: "pointer", padding: "4px 8px" },
+  metaRow: { display: "flex", gap: "24px", padding: "12px 20px", borderBottom: "1px solid #1e2d3d", background: "#080c10", flexWrap: "wrap" },
+  metaItem: { fontFamily: "var(--font-mono)", fontSize: "10px", color: "#3a5570", letterSpacing: "1px" },
+  metaVal: { color: "#d4e8f5", marginLeft: "6px", fontWeight: "600" },
+  imagesRow: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", padding: "20px" },
+  imageCard: { display: "flex", flexDirection: "column", gap: "0", background: "#080c10", border: "1px solid #1e2d3d", borderRadius: "6px", overflow: "hidden" },
+  imageLabel: { fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "2px", color: "#00e5a0", padding: "10px 14px", borderBottom: "1px solid #1e2d3d", background: "rgba(0,229,160,0.04)" },
+  image: { width: "100%", display: "block", objectFit: "contain", maxHeight: "380px", background: "#fff" },
+  downloadBtn: { margin: "12px 14px 14px", padding: "8px 14px", background: "transparent", border: "1px solid rgba(0,229,160,0.3)", borderRadius: "4px", color: "#00e5a0", fontFamily: "var(--font-display)", fontSize: "11px", fontWeight: "700", letterSpacing: "1px", cursor: "pointer", textAlign: "center" },
+  footer: { padding: "14px 20px", borderTop: "1px solid #1e2d3d", background: "#080c10", display: "flex", justifyContent: "flex-end" },
+  closeFullBtn: { padding: "8px 20px", background: "transparent", border: "1px solid #1e2d3d", borderRadius: "4px", color: "#6b8ca8", fontFamily: "var(--font-display)", fontSize: "12px", fontWeight: "600", letterSpacing: "2px", cursor: "pointer" },
+  noImages: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "48px 24px", gap: "12px", borderTop: "1px solid #1e2d3d" },
+  noImagesIcon: { fontSize: "40px", color: "#1e2d3d", lineHeight: 1 },
+  noImagesTitle: { fontFamily: "var(--font-display)", fontSize: "14px", fontWeight: "700", letterSpacing: "3px", color: "#3a5570" },
+  noImagesText: { fontFamily: "var(--font-mono)", fontSize: "11px", color: "#3a5570", textAlign: "center", maxWidth: "400px", lineHeight: 1.8, letterSpacing: "0.3px" },
 };
