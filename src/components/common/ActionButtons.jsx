@@ -204,8 +204,8 @@ export default function ActionButtons({ sketchItems = [] }) {
         generatedUrl: result?.imageUrl || null,
         attributes: attrs,
       };
-      const prev = JSON.parse(localStorage.getItem("sentinel_cases") || "[]");
-      localStorage.setItem("sentinel_cases", JSON.stringify([record, ...prev]));
+      const prev = JSON.parse(localStorage.getItem("drishtiai_cases") || "[]");
+      localStorage.setItem("drishtiai_cases", JSON.stringify([record, ...prev]));
       alert(`Case ${caseId} submitted! View in Database page.`);
     } catch (e) { alert("Submit failed: " + e.message); }
   };

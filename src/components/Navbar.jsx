@@ -6,7 +6,6 @@ const NAV_ITEMS = [
   { id: "alerts", label: "Alerts", icon: "⚠", badge: 3 },
   { id: "database", label: "Database", icon: "⊟" },
   { id: "reports", label: "Reports", icon: "≡" },
-  { id:"SketchBuilder", label: "Sketch",icon:"@"},
 ];
 
 export default function Navbar({ user, onLogout, activePage, onNavigate }) {
@@ -39,7 +38,7 @@ export default function Navbar({ user, onLogout, activePage, onNavigate }) {
           </svg>
         </div>
         <div>
-          <div style={styles.brandName}>SENTINEL</div>
+          <div style={styles.brandName}>DrishtiAI</div>
           <div style={styles.brandSub}>SURVEILLANCE SYSTEM</div>
         </div>
         <div style={styles.statusDot} title={status} />
@@ -54,7 +53,7 @@ export default function Navbar({ user, onLogout, activePage, onNavigate }) {
               ...styles.navItem,
               ...(activePage === item.id ? styles.navItemActive : {}),
             }}
-            onClick={() => onNavigate(item.id)}
+            onClick={() => onNavigate?.(item.id)}
           >
             <span style={styles.navIcon}>{item.icon}</span>
             <span>{item.label}</span>

@@ -1,5 +1,5 @@
 /**
- * SENTINEL Image API — Standalone Server
+ * DrishtiAI Image API — Standalone Server
  * 
  * Setup (one time):
  *   npm install
@@ -163,7 +163,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SENTINEL API</title>
+<title>DrishtiAI API</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:#040608;color:#d4e8f5;font-family:'Courier New',monospace;padding:40px;min-height:100vh}
@@ -194,7 +194,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
 </style>
 </head>
 <body>
-<h1>⬡ SENTINEL IMAGE API</h1>
+<h1>⬡ DrishtiAI IMAGE API</h1>
 <div class="sub">STANDALONE FACE GENERATION SERVER · PORT 3001</div>
 
 <div class="card">
@@ -371,7 +371,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   const cfg = getConfig();
-  console.log(`\n✅  SENTINEL Image API  →  http://localhost:${PORT}`);
+  console.log(`\n✅  DrishtiAI Image API  →  http://localhost:${PORT}`);
   console.log(`    Dashboard:  http://localhost:${PORT}/`);
   console.log(`    Provider:   ${cfg.colabUrl ? "✓ Colab — "+cfg.colabUrl.slice(0,40) : "✗ None — configure .env"}`);
   console.log(`    Cache:      ${CACHE}\n`);

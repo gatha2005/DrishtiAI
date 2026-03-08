@@ -25,7 +25,7 @@ export default function Login({ onLogin }) {
   const [bootLines, setBootLines] = useState([]);
 
   const BOOT_SEQUENCE = [
-    "SENTINEL OS v4.2.1 — Initializing...",
+    "DrishtiAI OS v1.0.0 — Initializing...",
     "Loading kernel modules... [OK]",
     "Network interface eth0... [ACTIVE]",
     "Camera subsystem... 24/24 nodes connected",
@@ -39,23 +39,16 @@ export default function Login({ onLogin }) {
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
-      setBootLines((prev) => {
-        if (i >= BOOT_SEQUENCE.length) {
-          clearInterval(interval);
-          setTimeout(() => setBootComplete(true), 400);
-          return prev;
-        }
-
-        const nextLine = BOOT_SEQUENCE[i];
+      if (i < BOOT_SEQUENCE.length) {
+        setBootLines((prev) => [...prev, BOOT_SEQUENCE[i]]);
         i++;
-        return [...prev, nextLine];
-      });
+      } else {
+        clearInterval(interval);
+        setTimeout(() => setBootComplete(true), 400);
+      }
     }, 150);
-
     return () => clearInterval(interval);
   }, []);
-
-  
 
   const handleSubmit = (e) => {
     e?.preventDefault();
@@ -85,9 +78,9 @@ export default function Login({ onLogin }) {
           {bootLines.map((line, i) => (
             <div key={i} style={{
               ...styles.termLine,
-              color: line?.includes("[OK]") || line.includes("[ACTIVE]") || line.includes("[RUNNING]") || line.includes("[ONLINE]") || line.includes("[ENGAGED]") || line.includes("[READY]")
+              color: line.includes("[OK]") || line.includes("[ACTIVE]") || line.includes("[RUNNING]") || line.includes("[ONLINE]") || line.includes("[ENGAGED]") || line.includes("[READY]")
                 ? "#00e5a0"
-                : line.includes("SENTINEL OS")
+                : line.includes("DrishtiAI OS")
                 ? "#f5a623"
                 : "#7ec8e3",
               animationDelay: `${i * 0.05}s`,
@@ -116,7 +109,7 @@ export default function Login({ onLogin }) {
                 <line x1="46" y1="28" x2="55" y2="28" stroke="#f5a623" strokeWidth="2"/>
               </svg>
             </div>
-            <div style={styles.title}>SENTINEL</div>
+            <div style={styles.title}>DrishtiAI</div>
             <div style={styles.subtitle}>SURVEILLANCE & INTELLIGENCE SYSTEM</div>
             <div style={styles.divider} />
           </div>

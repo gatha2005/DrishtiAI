@@ -171,7 +171,7 @@ function DatabasePage() {
   // Load saved cases from localStorage
   const savedCases = (() => {
     try {
-      return JSON.parse(localStorage.getItem("sentinel_cases") || "[]");
+      return JSON.parse(localStorage.getItem("drishtiai_cases") || "[]");
     } catch { return []; }
   })();
 
@@ -189,7 +189,7 @@ function DatabasePage() {
 
   const deleteRecord = (id) => {
     const updated = savedCases.filter(r => r.id !== id);
-    localStorage.setItem("sentinel_cases", JSON.stringify(updated));
+    localStorage.setItem("drishtiai_cases", JSON.stringify(updated));
     window.location.reload();
   };
 
@@ -518,7 +518,7 @@ export default function Dashboard({ user, onLogout }) {
         <div style={styles.pageHeader}>
           <div>
             <div style={styles.breadcrumb}>
-              <span style={styles.breadcrumbItem}>SENTINEL</span>
+              <span style={styles.breadcrumbItem}>DrishtiAI</span>
               <span style={styles.breadcrumbSep}>/</span>
               <span style={styles.breadcrumbCurrent}>{activePage.toUpperCase()}</span>
             </div>
