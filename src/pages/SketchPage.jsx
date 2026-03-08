@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import CanvasArea from "../components/sketch/CanvasArea";
@@ -7,6 +8,7 @@ import ActionButtons from "../components/common/ActionButtons";
 
 export default function SketchPage({ user, onLogout }) {
   const navigate = useNavigate();
+  const [sketchItems, setSketchItems] = useState([]);
 
   return (
     <div style={styles.root}>
@@ -74,10 +76,10 @@ export default function SketchPage({ user, onLogout }) {
               <span style={styles.canvasBadge}>DRAG &amp; DROP ACTIVE</span>
             </div>
             <div style={styles.canvasWrapper}>
-              <CanvasArea />
+              <CanvasArea items={sketchItems} setItems={setSketchItems} />
             </div>
             <div style={styles.actionsWrapper}>
-              <ActionButtons />
+              <ActionButtons sketchItems={sketchItems} />
             </div>
           </div>
 

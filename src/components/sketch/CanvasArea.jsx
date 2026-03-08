@@ -88,8 +88,11 @@ function getSnapPosition(dropX, dropY) {
 // Blend modes that work well for sketch layering
 const BLEND_MODES = ["normal", "multiply", "screen", "overlay", "darken", "luminosity"];
 
-export default function CanvasArea() {
-  const [items, setItems]           = useState([]);
+export default function CanvasArea({ items: extItems, setItems: setExtItems }) {
+  const [intItems, setIntItems] = useState([]);
+  const items    = extItems    ?? intItems;
+  const setItems = setExtItems ?? setIntItems;
+  const [_unused] = useState([]); // placeholder to keep hook count stable
   const [selectedId, setSelectedId] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
   const [resizingId, setResizingId] = useState(null);

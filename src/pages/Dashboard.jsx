@@ -633,7 +633,7 @@ const styles = {
 
 const dbStyles = {
   overlay: { position: "fixed", inset: 0, background: "rgba(4,6,8,0.92)", backdropFilter: "blur(8px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", animation: "fadeUp 0.3s ease-out" },
-  modal: { width: "100%", maxWidth: "900px", background: "#0c1118", border: "1px solid #2e4a66", borderRadius: "8px", boxShadow: "0 24px 64px rgba(0,0,0,0.8)", animation: "fadeUp 0.3s ease-out", maxHeight: "90vh", overflowY: "auto" },
+  modal: { width: "100%", maxWidth: "960px", background: "#0c1118", border: "1px solid #2e4a66", borderRadius: "8px", boxShadow: "0 24px 64px rgba(0,0,0,0.8)", animation: "fadeUp 0.3s ease-out", maxHeight: "92vh", overflowY: "auto" },
   modalHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid #1e2d3d", background: "#080c10", position: "sticky", top: 0, zIndex: 10 },
   modalTitle: { display: "flex", alignItems: "center", gap: "10px", fontFamily: "var(--font-display)", fontSize: "14px", fontWeight: "700", letterSpacing: "2px", color: "#d4e8f5" },
   dot: { width: "8px", height: "8px", borderRadius: "50%", background: "#00e5a0", animation: "pulse-green 2s infinite", flexShrink: 0 },
@@ -641,10 +641,10 @@ const dbStyles = {
   metaRow: { display: "flex", gap: "24px", padding: "12px 20px", borderBottom: "1px solid #1e2d3d", background: "#080c10", flexWrap: "wrap" },
   metaItem: { fontFamily: "var(--font-mono)", fontSize: "10px", color: "#3a5570", letterSpacing: "1px" },
   metaVal: { color: "#d4e8f5", marginLeft: "6px", fontWeight: "600" },
-  imagesRow: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", padding: "20px" },
+  imagesRow: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px", padding: "20px" },
   imageCard: { display: "flex", flexDirection: "column", gap: "0", background: "#080c10", border: "1px solid #1e2d3d", borderRadius: "6px", overflow: "hidden" },
   imageLabel: { fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "2px", color: "#00e5a0", padding: "10px 14px", borderBottom: "1px solid #1e2d3d", background: "rgba(0,229,160,0.04)" },
-  image: { width: "100%", display: "block", objectFit: "contain", maxHeight: "380px", background: "#fff" },
+  image: { width: "100%", display: "block", objectFit: "contain", background: "#fff" },
   downloadBtn: { margin: "12px 14px 14px", padding: "8px 14px", background: "transparent", border: "1px solid rgba(0,229,160,0.3)", borderRadius: "4px", color: "#00e5a0", fontFamily: "var(--font-display)", fontSize: "11px", fontWeight: "700", letterSpacing: "1px", cursor: "pointer", textAlign: "center" },
   footer: { padding: "14px 20px", borderTop: "1px solid #1e2d3d", background: "#080c10", display: "flex", justifyContent: "flex-end" },
   closeFullBtn: { padding: "8px 20px", background: "transparent", border: "1px solid #1e2d3d", borderRadius: "4px", color: "#6b8ca8", fontFamily: "var(--font-display)", fontSize: "12px", fontWeight: "600", letterSpacing: "2px", cursor: "pointer" },
